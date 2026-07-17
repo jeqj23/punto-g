@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect, useRef } from "react";
 
 export default function PuntoGWebsite() {
+  const asset = (filename) => `${import.meta.env.BASE_URL}${filename}`;
   const [selectedDrink, setSelectedDrink] = useState('');
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
@@ -17,60 +18,60 @@ export default function PuntoGWebsite() {
   const toppingOptions = [
     {
       name: 'Perlas Explosivas',
-      image: '/Perlas Explosivas.png',
+      image: asset('Perlas Explosivas.png'),
       requiredFor: ['Urus Blue', 'Baja Panty'],
     },
     {
       name: 'Trululu Blessd',
-      image: '/BLESSD CARICATURA.png',
+      image: asset('BLESSD CARICATURA.png'),
       requiredFor: ['Urus Blue'],
       onlyFor: ['Urus Blue'],
     },
     {
       name: 'MICHELADO TAJIN',
-      image: '/Tajín .png',
+      image: asset('Tajín .png'),
       onlyFor: ['Baja Panty'],
       freeLabel: 'Gratis',
     },
     {
       name: 'BonBonBum',
-      image: '/BonBonbun.png',
+      image: asset('BonBonbun.png'),
       exclusiveWith: 'CandyRanch',
       freeLabel: 'Gratis',
     },
     {
       name: 'CandyRanch',
-      image: '/Candy Ranch.png',
+      image: asset('Candy Ranch.png'),
       exclusiveWith: 'BonBonBum',
       freeLabel: 'Gratis',
     },
     {
       name: 'Trululu Gusanitos',
-      image: '/Trululu Gusanos .png',
+      image: asset('Trululu Gusanos .png'),
       extraPrice: 0.5,
       extraPriceLabel: '+0,50€',
     },
     {
       name: 'Trululu Aros',
-      image: '/Trululu Aros.png',
+      image: asset('Trululu Aros.png'),
       extraPrice: 0.5,
       extraPriceLabel: '+0,50€',
     },
     {
       name: 'OkaLoka Nanos',
-      image: '/OkaLoka Nanos .png',
+      image: asset('OkaLoka Nanos .png'),
       extraPrice: 1,
       extraPriceLabel: '+1,00€',
     },
     {
       name: 'JERINGAZO AMARILLO',
-      image: '/aguardiente amarillo.png',
+      image: asset('aguardiente amarillo.png'),
       extraPrice: 1.5,
       extraPriceLabel: '+1,50€',
     },
     {
       name: 'JERINGAZO VODKA',
-      image: '/Vodka.png',
+      image: asset('Vodka.png'),
       extraPrice: 1.5,
       extraPriceLabel: '+1,50€',
     },
@@ -79,17 +80,17 @@ export default function PuntoGWebsite() {
     {
       id: 'efectivo',
       label: 'Efectivo',
-      icon: '/BILLETE.png',
+      icon: asset('BILLETE.png'),
     },
     {
       id: 'bizum',
       label: 'Bizum',
-      icon: '/BIZUM.png',
+      icon: asset('BIZUM.png'),
     },
     {
       id: 'tarjeta',
       label: 'Tarjeta',
-      icon: '/MASTERCARD-VISA.png',
+      icon: asset('MASTERCARD-VISA.png'),
     },
   ];
   const availabilityItems = [
@@ -99,8 +100,8 @@ export default function PuntoGWebsite() {
   const featuredFlavors = [
     {
       name: 'Urus Blue',
-      image: '/URUS BLUE.png',
-      scrollGif: '/urus blue.gif',
+      image: asset('URUS BLUE.png'),
+      scrollGif: asset('urus blue.gif'),
       flavor: 'Mora Azul + Vodka',
       flavorClass: 'text-blue-400',
       descriptionStart: 'Dulce, fría e ',
@@ -109,8 +110,8 @@ export default function PuntoGWebsite() {
     },
     {
       name: 'Baja Panty',
-      image: '/BAJA PANTY.png',
-      scrollGif: '/baja panty.gif',
+      image: asset('BAJA PANTY.png'),
+      scrollGif: asset('baja panty.gif'),
       flavor: 'Maracumango + Aguardiente Amarillo',
       flavorClass: 'text-yellow-300',
       descriptionStart: 'Mezcla tropical diseñada para ',
@@ -118,7 +119,7 @@ export default function PuntoGWebsite() {
     },
     {
       name: 'RAPIDÍN',
-      image: '/RAPIDIN NUEVO SIN FONDO.png',
+      image: asset('RAPIDIN NUEVO SIN FONDO.png'),
       flavor: 'Maracumango o Mora Azul',
       flavorClass: 'text-pink-300',
       descriptionStart: 'Nuestra solución más rápida para el placer inmediato. Disfruta de la explosión de sabor de PUNTO G ',
@@ -539,7 +540,7 @@ export default function PuntoGWebsite() {
       <header className="sticky top-0 z-50 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
           <div className="w-full flex items-center justify-center lg:justify-start gap-4">
-            <img src="/LOGO%20PUNTO%20G.png" alt="Punto G Logo" className="h-20 sm:h-24 md:h-28 w-auto max-w-[220px] object-contain" />
+              <img src={asset('LOGO PUNTO G.png')} alt="Punto G Logo" className="h-20 sm:h-24 md:h-28 w-auto max-w-[220px] object-contain" />
           </div>
 
           <div className="w-full flex flex-wrap justify-center gap-6 z-10">
@@ -727,7 +728,7 @@ export default function PuntoGWebsite() {
                 cart.map((item, idx) => (
                   <div key={idx} className="flex items-center justify-between py-2 border-b border-white/5">
                     <div className="flex min-w-0 items-center gap-3">
-                      <img src={item.image ?? '/granizado.png'} alt={item.name} className="w-12 h-12 rounded-lg object-cover" />
+                    <img src={item.image ?? asset('granizado.png')} alt={item.name} className="w-12 h-12 rounded-lg object-cover" />
                       <div className="min-w-0">
                         <div className="font-semibold">{item.name}</div>
                         <div className="text-white/60 text-sm">{item.description}</div>
@@ -1006,7 +1007,7 @@ export default function PuntoGWebsite() {
               </h2>
               
               <div className="flex items-center gap-6 mb-8 flex-nowrap">
-                <img src="/DOMICILIARIO.png" alt="domiciliario" className="flex-none w-36 h-36 object-contain" />
+                <img src={asset('DOMICILIARIO.png')} alt="domiciliario" className="flex-none w-36 h-36 object-contain" />
                 <div className="text-lg md:text-xl text-white/70 leading-relaxed">
                   EN 20 MINUTOS CONOCERAS EL VERDADERO PLACER
                 </div>
@@ -1018,17 +1019,17 @@ export default function PuntoGWebsite() {
                 </h3>
                 <div className="mt-3 flex items-end justify-center gap-4 lg:justify-start">
                   <img
-                    src="/BILLETE.png"
+                    src={asset('BILLETE.png')}
                     alt="Efectivo"
                     className="h-12 w-auto object-contain sm:h-14"
                   />
                   <img
-                    src="/BIZUM.png"
+                    src={asset('BIZUM.png')}
                     alt="Bizum"
                     className="h-14 w-auto object-contain sm:h-16"
                   />
                   <img
-                    src="/MASTERCARD-VISA.png"
+                    src={asset('MASTERCARD-VISA.png')}
                     alt="Tarjeta"
                     className="h-8 w-auto object-contain sm:h-10"
                   />
@@ -1038,7 +1039,7 @@ export default function PuntoGWebsite() {
           </div>
 
           <div id="contacto" className="relative flex flex-col gap-6 items-center justify-between md:flex-row mt-16 pt-10 scroll-mt-24 before:absolute before:left-1/2 before:top-0 before:h-px before:w-screen before:-translate-x-1/2 before:bg-white/10">
-            <img src="/LOGO%20PUNTO%20G.png" alt="Punto G" className="h-24 w-auto" />
+                <img src={asset('LOGO PUNTO G.png')} alt="Punto G" className="h-24 w-auto" />
             <div className="flex flex-wrap gap-3 justify-center items-center">
               <a
                 href={instagramLink}
