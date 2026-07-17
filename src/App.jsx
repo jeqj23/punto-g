@@ -1,0 +1,1074 @@
+﻿import { useState, useEffect, useRef } from "react";
+
+export default function PuntoGWebsite() {
+  const [selectedDrink, setSelectedDrink] = useState('');
+  const [cart, setCart] = useState([]);
+  const [showCart, setShowCart] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('efectivo');
+  const [toppingDrink, setToppingDrink] = useState(null);
+  const [selectedToppings, setSelectedToppings] = useState([]);
+  const [rapidinFlavor, setRapidinFlavor] = useState('');
+  const [productQtys, setProductQtys] = useState({});
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmChecked, setConfirmChecked] = useState(false);
+  const [checkboxError, setCheckboxError] = useState(false);
+  const [showAvailability, setShowAvailability] = useState(true);
+  const [scrollingDrink, setScrollingDrink] = useState('');
+  const toppingOptions = [
+    {
+      name: 'Perlas Explosivas',
+      image: '/Perlas Explosivas.png',
+      requiredFor: ['Urus Blue', 'Baja Panty'],
+    },
+    {
+      name: 'Trululu Blessd',
+      image: '/BLESSD CARICATURA.png',
+      requiredFor: ['Urus Blue'],
+      onlyFor: ['Urus Blue'],
+    },
+    {
+      name: 'MICHELADO TAJIN',
+      image: '/Tajín .png',
+      onlyFor: ['Baja Panty'],
+      freeLabel: 'Gratis',
+    },
+    {
+      name: 'BonBonBum',
+      image: '/BonBonbun.png',
+      exclusiveWith: 'CandyRanch',
+      freeLabel: 'Gratis',
+    },
+    {
+      name: 'CandyRanch',
+      image: '/Candy Ranch.png',
+      exclusiveWith: 'BonBonBum',
+      freeLabel: 'Gratis',
+    },
+    {
+      name: 'Trululu Gusanitos',
+      image: '/Trululu Gusanos .png',
+      extraPrice: 0.5,
+      extraPriceLabel: '+0,50€',
+    },
+    {
+      name: 'Trululu Aros',
+      image: '/Trululu Aros.png',
+      extraPrice: 0.5,
+      extraPriceLabel: '+0,50€',
+    },
+    {
+      name: 'OkaLoka Nanos',
+      image: '/OkaLoka Nanos .png',
+      extraPrice: 1,
+      extraPriceLabel: '+1,00€',
+    },
+    {
+      name: 'JERINGAZO AMARILLO',
+      image: '/aguardiente amarillo.png',
+      extraPrice: 1.5,
+      extraPriceLabel: '+1,50€',
+    },
+    {
+      name: 'JERINGAZO VODKA',
+      image: '/Vodka.png',
+      extraPrice: 1.5,
+      extraPriceLabel: '+1,50€',
+    },
+  ];
+  const paymentOptions = [
+    {
+      id: 'efectivo',
+      label: 'Efectivo',
+      icon: '/BILLETE.png',
+    },
+    {
+      id: 'bizum',
+      label: 'Bizum',
+      icon: '/BIZUM.png',
+    },
+    {
+      id: 'tarjeta',
+      label: 'Tarjeta',
+      icon: '/MASTERCARD-VISA.png',
+    },
+  ];
+  const availabilityItems = [
+    { name: 'URUS BLUE', available: true },
+    { name: 'BAJA PANTY', available: true },
+  ];
+  const featuredFlavors = [
+    {
+      name: 'Urus Blue',
+      image: '/URUS BLUE.png',
+      scrollGif: '/urus blue.gif',
+      flavor: 'Mora Azul + Vodka',
+      flavorClass: 'text-blue-400',
+      descriptionStart: 'Dulce, fría e ',
+      highlight: 'imposible de olvidar',
+      reverse: true,
+    },
+    {
+      name: 'Baja Panty',
+      image: '/BAJA PANTY.png',
+      scrollGif: '/baja panty.gif',
+      flavor: 'Maracumango + Aguardiente Amarillo',
+      flavorClass: 'text-yellow-300',
+      descriptionStart: 'Mezcla tropical diseñada para ',
+      highlight: 'subir la temperatura',
+    },
+    {
+      name: 'RAPIDÍN',
+      image: '/RAPIDIN NUEVO SIN FONDO.png',
+      flavor: 'Maracumango o Mora Azul',
+      flavorClass: 'text-pink-300',
+      descriptionStart: 'Nuestra solución más rápida para el placer inmediato. Disfruta de la explosión de sabor de PUNTO G ',
+      highlight: 'sin esperas, en segundos',
+      basePrice: 5,
+      rapidin: true,
+      reverse: true,
+    },
+  ];
+  const drinks = [
+    {
+      name: 'Baja Pantys',
+      price: 8.5,
+      description: 'Fresco, atrevido y con un toque tropical irresistible.',
+      gradient: 'from-pink-500 via-fuchsia-500 to-orange-400',
+    },
+    {
+      name: 'Noche de Locura',
+      description: 'Sabor intenso para noches inolvidables.',
+      gradient: 'from-violet-600 via-purple-500 to-indigo-500',
+      price: 8.5,
+    },
+    {
+      name: 'El 69',
+      description: 'Doble explosión de sabor dulce y ácido.',
+      gradient: 'from-red-500 via-pink-500 to-yellow-400',
+      price: 8.5,
+    },
+    {
+      name: 'El Orgásmico',
+      description: 'Una mezcla salvaje con energía juvenil.',
+      gradient: 'from-cyan-400 via-blue-500 to-purple-500',
+      price: 8.5,
+    },
+    {
+      name: 'El Prohibido',
+      description: 'Sabor oscuro y misterioso para los más atrevidos.',
+      gradient: 'from-gray-700 via-gray-900 to-black',
+      price: 8.5,
+    },
+    {
+      name: 'El levanta toros',
+      description: 'Un granizado con un toque de energía para despertar tus sentidos.',
+      gradient: 'from-green-400 via-lime-500 to-yellow-400',
+      price: 8.5,
+    }
+  ]
+
+  const formatEuro = (value) =>
+    `${value.toLocaleString('es-ES', { minimumFractionDigits: value % 1 === 0 ? 0 : 2, maximumFractionDigits: 2 })}€`;
+
+  const cartTotal = cart.reduce((sum, item) => sum + item.qty * item.price, 0);
+
+  const scrollYRef = useRef(0);
+  const scrollStopTimerRef = useRef(null);
+
+  useEffect(() => {
+    const lockPage = showCart || confirmOpen || toppingDrink || showAvailability;
+    if (lockPage) {
+      scrollYRef.current = window.scrollY;
+      document.documentElement.style.overflow = 'hidden';
+      document.documentElement.style.overscrollBehavior = 'none';
+      document.documentElement.style.height = '100%';
+      document.body.style.overflow = 'hidden';
+      document.body.style.overscrollBehavior = 'none';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollYRef.current}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+    } else {
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.overscrollBehavior = '';
+      document.documentElement.style.height = '';
+      document.body.style.overflow = '';
+      document.body.style.overscrollBehavior = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+      window.scrollTo(0, scrollYRef.current);
+    }
+
+    return () => {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+    };
+  }, [showCart, confirmOpen, toppingDrink, showAvailability]);
+
+  useEffect(() => {
+    const updateScrollingDrink = () => {
+      const viewportCenter = window.innerHeight / 2;
+      const activeSection = Array.from(document.querySelectorAll('[data-scroll-drink]')).find((section) => {
+        const rect = section.getBoundingClientRect();
+        return rect.top <= viewportCenter && rect.bottom >= viewportCenter;
+      });
+
+      setScrollingDrink(activeSection?.getAttribute('data-scroll-drink') ?? '');
+
+      if (scrollStopTimerRef.current) {
+        window.clearTimeout(scrollStopTimerRef.current);
+      }
+
+      scrollStopTimerRef.current = window.setTimeout(() => {
+        setScrollingDrink('');
+      }, 180);
+    };
+
+    window.addEventListener('scroll', updateScrollingDrink, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', updateScrollingDrink);
+      if (scrollStopTimerRef.current) {
+        window.clearTimeout(scrollStopTimerRef.current);
+      }
+    };
+  }, []);
+
+  const getWhatsappLink = (drinkName) =>
+    `https://wa.me/573133557894?text=${encodeURIComponent(`Hola quiero pedir el ${drinkName}`)}`
+  const instagramLink = 'https://www.instagram.com/puntog_oficiall/?hl=es'
+  const footerWhatsappLink =
+    'https://wa.me/573133557894?text=%21Hola%21%20buenas%20me%20gustar%C3%ADa%20pedir%20el%20'
+  const phoneLink = 'tel:641168112'
+  const locationQuery = 'Calpe, Alicante'
+  const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationQuery)}`
+  const mobileMapLink = `geo:0,0?q=${encodeURIComponent(locationQuery)}`
+  const availabilityDate = new Date().toLocaleDateString('es-ES', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  });
+
+  const openMap = () => {
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isAppleMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.location.href = isAppleMobile ? `https://maps.apple.com/?q=${encodeURIComponent(locationQuery)}` : mobileMapLink;
+      return;
+    }
+    window.open(googleMapsLink, '_blank', 'noopener,noreferrer');
+  }
+
+  const addToCart = (drink) => {
+    const qty = productQtys[drink.name] ? productQtys[drink.name] : 1;
+    setCart((prev) => {
+      const existing = prev.find((it) => it.name === drink.name && it.description === drink.description && it.price === drink.price);
+      if (existing) {
+        return prev.map((it) => it.name === drink.name && it.description === drink.description && it.price === drink.price ? { ...it, qty: it.qty + qty } : it);
+      }
+      return [...prev, { ...drink, qty }];
+    });
+    setProductQtys((prev) => ({ ...prev, [drink.name]: 1 }));
+  }
+
+  const removeFromCart = (index) => {
+    setCart((p) => p.filter((_, i) => i !== index));
+  }
+
+  const increaseQty = (index) => {
+    setCart((p) => p.map((it, i) => i === index ? { ...it, qty: it.qty + 1 } : it));
+  }
+
+  const decreaseQty = (index) => {
+    setCart((p) => {
+      const copy = p.map((it, i) => i === index ? { ...it, qty: it.qty - 1 } : it);
+      return copy.filter((it) => it.qty > 0);
+    });
+  }
+
+  const setProductQty = (name, value) => {
+    setProductQtys((p) => ({ ...p, [name]: value }));
+  }
+
+  const getRequiredToppings = (drinkName) =>
+    toppingOptions
+      .filter((topping) => topping.requiredFor?.includes(drinkName))
+      .map((topping) => topping.name);
+
+  const getVisibleToppingOptions = (drinkName) =>
+    toppingOptions
+      .filter((topping) => {
+        if (drinkName === 'RAPIDÍN' && topping.name === 'Perlas Explosivas') return false;
+        return !topping.onlyFor || topping.onlyFor.includes(drinkName);
+      })
+      .map((topping) => {
+        if (drinkName === 'RAPIDÍN' && (topping.name === 'BonBonBum' || topping.name === 'CandyRanch')) {
+          return {
+            ...topping,
+            freeLabel: undefined,
+            extraPrice: 0.5,
+            extraPriceLabel: '+0,50€',
+          };
+        }
+
+        return topping;
+      });
+
+  const getSelectedToppingDetails = () =>
+    selectedToppings
+      .map((name) => getVisibleToppingOptions(toppingDrink?.name).find((topping) => topping.name === name))
+      .filter(Boolean);
+
+  const getSelectedExtrasTotal = () =>
+    getSelectedToppingDetails().reduce((sum, topping) => sum + (topping.extraPrice ?? 0), 0);
+
+  const hasExclusiveTopping = selectedToppings.includes('BonBonBum') || selectedToppings.includes('CandyRanch');
+
+  const isToppingRequired = (toppingName) =>
+    toppingDrink ? getRequiredToppings(toppingDrink.name).includes(toppingName) : false;
+
+  const isToppingBlocked = (topping) =>
+    Boolean(topping.exclusiveWith && selectedToppings.includes(topping.exclusiveWith));
+
+  const openToppingModal = (drink) => {
+    setSelectedDrink(drink.name);
+    setToppingDrink(drink);
+    setSelectedToppings(getRequiredToppings(drink.name));
+    setRapidinFlavor('');
+  }
+
+  const toggleTopping = (topping) => {
+    if (isToppingRequired(topping.name) || isToppingBlocked(topping)) return;
+
+    setSelectedToppings((current) => {
+      if (current.includes(topping.name)) return current.filter((item) => item !== topping.name);
+      return [...current, topping.name];
+    });
+  }
+
+  const confirmToppings = () => {
+    if (!toppingDrink) return;
+    const isRapidin = toppingDrink.name === 'RAPIDÍN';
+    if (!isRapidin && !hasExclusiveTopping) return;
+    if (isRapidin && !rapidinFlavor) return;
+    const selectedDetails = getSelectedToppingDetails();
+    const extrasTotal = getSelectedExtrasTotal();
+    const toppingsText = selectedDetails.length
+      ? selectedDetails.map((topping) => topping.extraPriceLabel ? `${topping.name} ${topping.extraPriceLabel}` : topping.name).join(', ')
+      : 'Sin topping';
+    const whatsappToppings = selectedDetails.map((topping) => topping.name);
+    const basePrice = toppingDrink.basePrice ?? 8.5;
+    const price = basePrice + extrasTotal;
+    addToCart({
+      name: toppingDrink.name,
+      description: `${isRapidin ? `Sabor: ${rapidinFlavor}. ` : ''}Toppings: ${toppingsText}`,
+      whatsappToppings,
+      rapidinFlavor,
+      price,
+      basePrice,
+      extrasTotal,
+      image: toppingDrink.image,
+    });
+    setToppingDrink(null);
+    setSelectedToppings([]);
+    setRapidinFlavor('');
+  }
+
+  const getWhatsAppOrderMessage = () => {
+    const items = cart.map((item) => {
+      const toppings = item.whatsappToppings?.length
+        ? item.whatsappToppings.map((topping) => `· ${topping}`).join('\n')
+        : '· Sin topping';
+      const qtyText = item.qty > 1 ? `${item.qty}x ` : '';
+      const flavorText = item.rapidinFlavor ? `\nSabor: ${item.rapidinFlavor}` : '';
+      return `${qtyText}${item.name}${flavorText}\n${toppings}`;
+    }).join('\n\n');
+    const total = formatEuro(cartTotal);
+    const selectedPaymentLabel = paymentOptions.find((option) => option.id === paymentMethod)?.label ?? paymentMethod;
+    return `${items}\n\nImporte Total: ${total} Metodo de pago: ${selectedPaymentLabel}.`;
+  }
+
+  const sendWhatsAppMessage = (message) => {
+    const url = `https://wa.me/573133557894?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+  }
+
+  const openPaymentOrWhatsapp = () => {
+    if (cart.length === 0) return;
+    const message = getWhatsAppOrderMessage();
+    sendWhatsAppMessage(message);
+  }
+
+  const proceedConfirm = () => {
+    if (!confirmChecked) {
+      setCheckboxError(true);
+      return;
+    }
+    setShowCart(false);
+    setConfirmOpen(false);
+    const message = getWhatsAppOrderMessage();
+    sendWhatsAppMessage(message);
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white overflow-x-hidden scroll-smooth">
+      <style>{`
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-bottom {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes cart-bounce {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  18% {
+    transform: translateY(-12px) scale(1.04);
+  }
+
+  36% {
+    transform: translateY(0) scale(1);
+  }
+
+  54% {
+    transform: translateY(-7px) scale(1.03);
+  }
+
+  72% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes live-blink {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 rgba(239, 68, 68, 0);
+  }
+
+  50% {
+    opacity: 0.42;
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.72);
+  }
+}
+
+`}</style>
+      {showAvailability && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 px-4 py-6 backdrop-blur-md">
+          <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#070708] p-5 shadow-[0_30px_120px_rgba(236,72,153,0.24)] sm:p-6">
+            <button
+              type="button"
+              onClick={() => setShowAvailability(false)}
+              className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-lg font-bold text-white/70 transition-all duration-300 hover:border-pink-400 hover:text-white"
+              aria-label="Cerrar disponibilidad"
+            >
+              X
+            </button>
+
+            <div className="px-10 text-center">
+              <h2 className="text-3xl font-black uppercase leading-none text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-500 to-purple-500 sm:text-4xl">
+                PRODUCTOS DISPONIBLES
+              </h2>
+              <div className="mt-2 flex items-center justify-center gap-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/65">
+                  {availabilityDate}
+                </p>
+                <span className="rounded-full bg-red-500 px-2.5 py-1 text-[0.58rem] font-black uppercase tracking-[0.12em] text-white animate-[live-blink_1s_ease-in-out_infinite]">
+                  EN VIVO
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-6 space-y-3">
+              {availabilityItems.map((item) => (
+                <div
+                  key={item.name}
+                  className={`flex items-center justify-between rounded-2xl border px-4 py-3 ${
+                    item.available ? 'border-white/10 bg-white/5 text-white' : 'border-white/5 bg-white/[0.03] text-white/35'
+                  }`}
+                >
+                  <span className="text-lg font-black uppercase tracking-[0.06em]">{item.name}</span>
+                  <span
+                    className={`ml-3 shrink-0 rounded-full px-2.5 py-1 text-[0.58rem] font-black uppercase tracking-[0.12em] ${
+                      item.available
+                        ? 'bg-emerald-500 text-white'
+                        : 'bg-white/10 text-white/45'
+                    }`}
+                  >
+                    {item.available ? 'DISPONIBLE' : 'NO DISPONIBLE'}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <p className="mt-5 text-center text-sm font-semibold leading-relaxed text-white/70">
+              Cierre esta ventana para dejarse seducir por nuestros productos
+            </p>
+          </div>
+        </div>
+      )}
+      {/* Navbar */}
+      <header className="sticky top-0 z-50 bg-black">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
+          <div className="w-full flex items-center justify-center lg:justify-start gap-4">
+            <img src="/LOGO%20PUNTO%20G.png" alt="Punto G Logo" className="h-20 sm:h-24 md:h-28 w-auto max-w-[220px] object-contain" />
+          </div>
+
+          <div className="w-full flex flex-wrap justify-center gap-6 z-10">
+            <a
+              href="#sabores"
+              className="text-white/70 hover:text-white transition-all duration-300 uppercase"
+              style={{
+                fontSize: "0.85rem",
+                letterSpacing: "0.22em",
+                fontWeight: "300"
+              }}
+            >
+              SABORES
+            </a>
+            <a
+              href="#contacto"
+              className="text-white/70 hover:text-white transition-all duration-300 uppercase"
+              style={{
+                fontSize: "0.85rem",
+                letterSpacing: "0.22em",
+                fontWeight: "300"
+              }}
+            >
+              CONTACTO
+            </a>
+          </div>
+
+        </div>
+      </header>
+
+      {/* Floating cart button (se mantiene al hacer scroll) */}
+      <button
+        onClick={() => setShowCart(true)}
+        className={`hidden lg:flex fixed right-6 top-1/3 z-50 bg-pink-500 text-black rounded-full px-4 py-3 shadow-xl ${cart.length > 0 ? 'animate-[cart-bounce_1.25s_ease-in-out_infinite]' : ''}`}
+      >
+        🛒 {cart.length}
+      </button>
+      <button
+        onClick={() => setShowCart(true)}
+        className={`lg:hidden fixed right-4 bottom-6 z-50 bg-pink-500 text-black rounded-full px-4 py-3 shadow-xl ${cart.length > 0 ? 'animate-[cart-bounce_1.25s_ease-in-out_infinite]' : ''}`}
+      >
+        🛒 {cart.length}
+      </button>
+
+      {/* Hero */}
+      <section className="relative max-w-7xl mx-auto px-6 pt-12 pb-14 sm:pb-16 text-center">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-pink-500/30 bg-pink-500/10 text-pink-300 text-sm mb-8 backdrop-blur-md">
+          Granizados atrevidos • Sabor que provoca
+        </div>
+
+        <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-[7.5rem] xl:text-[8rem] font-black tracking-[-0.04em] sm:tracking-[-0.06em] md:tracking-[-0.07em] leading-[1.04] sm:leading-[1.02] md:leading-[1] lg:leading-[0.98] uppercase max-w-[100%] sm:max-w-[760px] mx-auto break-words overflow-visible">
+          El sabor
+          <br />
+          <span className="bg-gradient-to-r from-pink-400 via-fuchsia-500 to-purple-500 text-transparent bg-clip-text">
+            más prohibido
+          </span>
+        </h2>
+
+        <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+          <a
+            href="#sabores"
+            className="px-8 py-4 rounded-full bg-white text-black font-semibold hover:scale-105 transition-all duration-300 shadow-2xl shadow-pink-500/20"
+          >
+            Descubre los sabores
+          </a>
+        </div>
+
+      </section>
+
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-x-0 top-0 bottom-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(236,72,153,0.12)_16%,rgba(168,85,247,0.12)_44%,rgba(236,72,153,0.08)_72%,rgba(0,0,0,0)_100%)]" />
+        <div className="absolute inset-x-[-8rem] top-0 bottom-0 bg-gradient-to-r from-pink-500/10 via-transparent to-purple-500/10 blur-3xl" />
+
+      <section id="sabores" className="relative px-4 py-6 sm:px-6 sm:py-8 lg:py-8">
+
+        <div className="relative mx-auto max-w-7xl">
+          <h3 className="mx-auto mb-8 max-w-5xl text-center text-[clamp(2.8rem,8vw,7rem)] font-black uppercase leading-[0.95] tracking-[-0.04em] text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-500 to-purple-500 sm:mb-10">
+            Creado para provocar
+          </h3>
+
+          <div className="space-y-0 sm:space-y-2">
+            {featuredFlavors.map((drink) => (
+              <article
+                key={drink.name}
+                data-scroll-drink={drink.scrollGif ? drink.name : undefined}
+                className="grid grid-cols-1 items-center gap-2 overflow-hidden py-3 sm:grid-cols-2 sm:py-3 lg:gap-8 lg:py-4"
+              >
+                <div className={`relative ${drink.reverse ? 'sm:order-2' : ''}`}>
+                  <img
+                    src={scrollingDrink === drink.name && drink.scrollGif ? drink.scrollGif : drink.image}
+                    alt={drink.name}
+                    className={`relative z-10 mx-auto h-auto w-full object-contain mix-blend-lighten ${
+                      drink.rapidin ? 'max-h-[410px] max-w-[460px] sm:max-h-[460px] sm:max-w-[580px] lg:max-h-[700px] lg:max-w-[840px]' : 'max-h-[390px] max-w-[440px] sm:max-h-[440px] sm:max-w-[560px] lg:max-h-[680px] lg:max-w-[780px]'
+                    }`}
+                    style={{
+                      mixBlendMode: 'lighten',
+                      filter: 'saturate(1.28) contrast(1.12) brightness(1.04)',
+                    }}
+                  />
+                </div>
+
+                <div className={`mx-auto w-full max-w-xl text-left ${drink.reverse ? 'sm:order-1' : ''}`}>
+                  <h4 className="text-[clamp(1.8rem,5vw,4.4rem)] font-black uppercase leading-[0.9] tracking-[-0.035em]">
+                    {drink.rapidin ? (
+                      <>
+                        <span className="block text-white">NUEVO</span>
+                        <span className="block text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-500 to-purple-500">RAPIDÍN</span>
+                      </>
+                    ) : (
+                      drink.name.split(' ').map((word, index) => (
+                        <span
+                          key={word}
+                          className={index === 0 ? 'block text-white' : 'block text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-500 to-purple-500'}
+                        >
+                          {word}
+                        </span>
+                      ))
+                    )}
+                  </h4>
+
+                  <p
+                    className="mt-3 text-sm font-semibold text-white/85 sm:text-2xl lg:text-3xl"
+                    style={{ fontFamily: "'Trebuchet MS', 'Montserrat', Arial, sans-serif" }}
+                  >
+                    Sabor:{' '}
+                    {drink.name === 'RAPIDÍN' ? (
+                      <>
+                        <strong className="text-yellow-300">Maracumango</strong>
+                        <span className="text-white/70"> o </span>
+                        <strong className="text-blue-400">Mora Azul</strong>
+                      </>
+                    ) : (
+                      <strong className={drink.flavorClass}>{drink.flavor}</strong>
+                    )}
+                  </p>
+
+                  <p
+                    className="mt-2 text-sm font-medium leading-snug text-white/75 sm:text-xl sm:leading-relaxed lg:text-2xl"
+                    style={{ fontFamily: "'Trebuchet MS', 'Montserrat', Arial, sans-serif" }}
+                  >
+                    {drink.descriptionStart}
+                    <strong className="text-pink-400">{drink.highlight}</strong>.
+                  </p>
+
+                  <button
+                    onClick={() => openToppingModal(drink)}
+                    className="group mt-3 inline-flex items-center gap-2 rounded-full border border-pink-400/70 bg-white/5 px-4 py-2.5 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white shadow-[0_0_22px_rgba(236,72,153,0.18)] transition-all duration-300 hover:scale-105 hover:border-transparent hover:bg-gradient-to-r hover:from-pink-400 hover:via-fuchsia-500 hover:to-purple-500 sm:mt-5 sm:gap-3 sm:px-7 sm:py-3 sm:text-sm"
+                  >
+                    PROBAR AHORA
+                    <span className="text-base text-pink-400 transition-colors duration-300 group-hover:text-white sm:text-xl">→</span>
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Carrito (panel) */}
+      {showCart && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-[radial-gradient(circle_at_25%_30%,rgba(236,72,153,0.35),transparent_32%),radial-gradient(circle_at_78%_55%,rgba(168,85,247,0.28),transparent_34%),rgba(0,0,0,0.68)] backdrop-blur-md"
+            onClick={() => setShowCart(false)}
+          />
+          <div className="fixed right-2 left-2 top-20 bottom-6 sm:right-6 sm:left-auto w-[calc(100vw-1rem)] sm:w-96 bg-[#070708] border border-white/10 rounded-xl z-50 shadow-xl transition-transform duration-500 ease-out animate-[slide-in-bottom_0.4s_ease-out] sm:animate-[slide-in-right_0.45s_ease-out] max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden">
+            <div className="p-4 border-b border-white/10">
+              <div className="flex flex-col gap-2 mb-2">
+                <h4 className="text-xl font-bold">MI CARRITO</h4>
+                <div className="text-sm text-white/60">Productos: {cart.reduce((sum, item) => sum + item.qty, 0)}</div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="text-white/80 font-semibold">Resumen</div>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => { setCart([]); }} className="text-sm text-white/60 hover:text-white">Vaciar</button>
+                  <button onClick={() => setShowCart(false)} className="text-sm text-white/60 hover:text-white">Cerrar</button>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar p-4 space-y-4">
+              {cart.length === 0 ? (
+                <p className="text-white/50 text-sm">Tu carrito está vacío.</p>
+              ) : (
+                cart.map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between py-2 border-b border-white/5">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <img src={item.image ?? '/granizado.png'} alt={item.name} className="w-12 h-12 rounded-lg object-cover" />
+                      <div className="min-w-0">
+                        <div className="font-semibold">{item.name}</div>
+                        <div className="text-white/60 text-sm">{item.description}</div>
+                        <div className="mt-1 text-xs text-white/45">
+                          Base {formatEuro(item.basePrice ?? 8.5)}
+                          {(item.extrasTotal ?? 0) > 0 && ` + extras ${formatEuro(item.extrasTotal)}`}
+                        </div>
+                        <div className="mt-1 text-sm font-semibold text-white">
+                          Unidad: {formatEuro(item.price ?? 8.5)}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => decreaseQty(idx)} className="px-2 py-1 bg-white/5 rounded">-</button>
+                        <div className="px-2">{item.qty}</div>
+                        <button onClick={() => increaseQty(idx)} className="px-2 py-1 bg-white/5 rounded">+</button>
+                      </div>
+                      <button onClick={() => removeFromCart(idx)} className="text-sm text-white/60 hover:text-white">Eliminar</button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="border-t border-white/10 bg-[#070708] p-4">
+              <div className="mb-4">
+                <p className="mb-3 text-sm font-semibold uppercase tracking-[0.16em] text-white/55">Método de pago</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {paymentOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => setPaymentMethod(option.id)}
+                      className={`flex min-h-20 flex-col items-center justify-center gap-2 rounded-2xl border p-2 text-xs font-bold uppercase tracking-[0.08em] transition-all duration-300 ${
+                        paymentMethod === option.id
+                          ? 'border-pink-400 bg-pink-500/15 text-white'
+                          : 'border-white/10 bg-white/5 text-white/60 hover:border-pink-400/60 hover:text-white'
+                      }`}
+                    >
+                      <img src={option.icon} alt={option.label} className="h-8 w-full object-contain" />
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-4 text-right text-lg font-semibold text-white">Importe Total: {formatEuro(cartTotal)}</div>
+
+              <div className="flex gap-2 flex-col sm:flex-row">
+                <button onClick={() => { setConfirmOpen(true); setConfirmChecked(false); setCheckboxError(false); }} className="w-full sm:flex-1 px-4 py-2 rounded-full bg-pink-500 text-white font-semibold">Confirmar</button>
+                <button onClick={() => setShowCart(false)} className="w-full sm:w-auto px-4 py-2 rounded-full border border-white/10 text-sm">Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {toppingDrink && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 px-2 py-3 overscroll-contain sm:px-3 sm:py-4">
+          <div className="flex max-h-[calc(100dvh-0.75rem)] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#070708] shadow-[0_30px_120px_rgba(236,72,153,0.22)] sm:max-h-[calc(100dvh-1.5rem)] sm:rounded-3xl">
+            <div className="shrink-0 border-b border-white/10 p-3 text-center sm:p-4">
+              <p className="text-xs uppercase tracking-[0.22em] text-white/50 sm:text-sm sm:tracking-[0.28em]">{toppingDrink.name}</p>
+              {toppingDrink.name === 'RAPIDÍN' ? (
+                <h3 className="mt-1 text-2xl font-black uppercase text-white sm:mt-2 sm:text-4xl">
+                  NUEVO{' '}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-500 to-purple-500">
+                    RAPIDÍN
+                  </span>
+                </h3>
+              ) : (
+                <h3 className="mt-1 text-2xl font-black uppercase text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-500 to-purple-500 sm:mt-2 sm:text-4xl">
+                  Toppings
+                </h3>
+              )}
+              {toppingDrink.name === 'RAPIDÍN' ? (
+                <div className="mt-3 grid grid-cols-2 gap-2 sm:mx-auto sm:max-w-md">
+                  {['MARACUMANGO', 'MORA AZUL'].map((flavor) => (
+                    <button
+                      key={flavor}
+                      type="button"
+                      onClick={() => setRapidinFlavor(flavor)}
+                      className={`rounded-full border px-4 py-3 text-xs font-black uppercase tracking-[0.12em] transition-all duration-300 sm:text-sm ${
+                        rapidinFlavor === flavor
+                          ? 'border-pink-400 bg-pink-500 text-white shadow-[0_0_24px_rgba(236,72,153,0.35)]'
+                          : `border-white/10 bg-white/5 hover:border-pink-400/70 ${flavor === 'MARACUMANGO' ? 'text-yellow-300' : 'text-blue-400'}`
+                      }`}
+                    >
+                      {flavor}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-pink-300 sm:mt-3 sm:text-sm sm:tracking-[0.18em]">
+                  Elige Bonbonbum o CandyRanch
+                </p>
+              )}
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4" style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
+                {getVisibleToppingOptions(toppingDrink.name).map((topping) => {
+                  const checked = selectedToppings.includes(topping.name);
+                  const required = isToppingRequired(topping.name);
+                  const blocked = isToppingBlocked(topping);
+
+                  return (
+                    <button
+                      type="button"
+                      key={topping.name}
+                      onClick={() => toggleTopping(topping)}
+                      disabled={blocked}
+                      className={`group flex min-h-[120px] cursor-pointer flex-col overflow-hidden rounded-2xl border p-2 text-left text-white/80 transition-all duration-300 sm:min-h-[172px] sm:p-3 ${
+                        checked
+                          ? 'border-pink-400 bg-pink-500/15 shadow-[0_0_28px_rgba(236,72,153,0.18)]'
+                          : 'border-white/10 bg-white/5 hover:border-pink-400/70 hover:bg-pink-500/10'
+                      } ${blocked ? 'cursor-not-allowed opacity-55 hover:border-white/10 hover:bg-white/5' : ''}`}
+                    >
+                      <div className="min-w-0">
+                        <div className="break-words text-xs font-bold leading-tight text-white sm:text-sm">
+                          {blocked ? 'Solo puedes elegir uno' : topping.name}
+                        </div>
+                        {required && (
+                          <div className="mt-1 text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-pink-300 sm:text-xs sm:tracking-[0.16em]">
+                            Obligatorio
+                          </div>
+                        )}
+                        {(topping.extraPriceLabel || topping.freeLabel) && (
+                          <div className={`mt-1 text-xs font-black sm:text-sm ${topping.freeLabel ? 'text-emerald-400' : 'text-white'}`}>
+                            {topping.extraPriceLabel ?? topping.freeLabel}
+                          </div>
+                        )}
+                        {!required && !blocked && (topping.name === 'BonBonBum' || topping.name === 'CandyRanch') && (
+                          <div className="mt-1 text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-white/45 sm:text-xs sm:tracking-[0.16em]">
+                            Elige uno
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="mt-1 flex flex-1 items-center justify-center sm:mt-2">
+                        <img
+                          src={topping.image}
+                          alt={topping.name}
+                          className="max-h-16 w-full object-contain transition-transform duration-300 group-hover:scale-105 sm:max-h-28"
+                        />
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {toppingDrink.name !== 'RAPIDÍN' && !hasExclusiveTopping && (
+                <p className="mt-4 text-center text-sm font-semibold text-pink-300">
+                  Elige BonBonBum o CandyRanch para continuar.
+                </p>
+              )}
+              {toppingDrink.name === 'RAPIDÍN' && !rapidinFlavor && (
+                <p className="mt-4 text-center text-sm font-semibold text-pink-300">
+                  Elige Maracumango o Mora Azul para continuar.
+                </p>
+              )}
+            </div>
+
+            <div className="shrink-0 flex flex-col gap-3 border-t border-white/10 p-3 sm:flex-row sm:justify-end sm:p-4">
+              <button
+                onClick={() => {
+                  setToppingDrink(null);
+                  setSelectedToppings([]);
+                  setRapidinFlavor('');
+                }}
+                className="rounded-full border border-white/10 px-5 py-2.5 font-semibold text-white/80 transition-all duration-300 hover:bg-white/10"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmToppings}
+                disabled={toppingDrink.name === 'RAPIDÍN' ? !rapidinFlavor : !hasExclusiveTopping}
+                className="rounded-full bg-pink-500 px-7 py-2.5 font-bold text-white transition-all duration-300 hover:scale-105 hover:bg-gradient-to-r hover:from-pink-400 hover:via-fuchsia-500 hover:to-purple-500 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/35 disabled:hover:scale-100"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmación (pantalla completa) */}
+      {confirmOpen && (
+        <div className="fixed inset-0 z-[60] flex items-start sm:items-center justify-center bg-black/80 px-4 py-4 overscroll-contain overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}>
+          <div className="bg-[#070708] w-full max-w-2xl mx-auto rounded-xl overflow-hidden max-h-[calc(100dvh-4rem)] pb-6">
+            <div className="flex h-full flex-col p-5 lg:p-6 min-h-0 overflow-y-auto pb-6" style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}>
+              <div>
+                <h3 className="text-3xl md:text-4xl font-bold mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-500 to-purple-500 uppercase tracking-tight">REVISA SI TU ORDEN ESTÁ EN SU PUNTO G</h3>
+              </div>
+
+              <div className="sticky top-0 z-20 mb-4 rounded-3xl border border-white/10 bg-black/20 p-4 text-center">
+                <div className="text-sm text-white/60 mb-2">Importe Total</div>
+                <div className="text-2xl font-bold text-white">{formatEuro(cartTotal)}</div>
+              </div>
+
+
+              <div className="mt-4">
+                <p className="text-white/60">Método de pago seleccionado: <strong className="text-white">{paymentOptions.find((option) => option.id === paymentMethod)?.label}</strong></p>
+              </div>
+
+              <div className={`mt-4 rounded-3xl border bg-white/5 p-4 text-sm text-white/80 transition-all duration-300 ${
+                checkboxError ? 'border-red-500 shadow-[0_0_26px_rgba(239,68,68,0.18)]' : 'border-white/10'
+              }`}>
+                <label className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    checked={confirmChecked}
+                    onChange={(e) => {
+                      setConfirmChecked(e.target.checked);
+                      if (e.target.checked) setCheckboxError(false);
+                    }}
+                    className={`mt-1 h-5 w-5 rounded accent-pink-500 ${checkboxError ? 'outline outline-2 outline-offset-2 outline-red-500' : ''}`}
+                  />
+                  <span className="leading-relaxed">
+                    He leído, acepto el importe total y autorizo el envío del pedido por WhatsApp.
+                  </span>
+                </label>
+                {checkboxError && (
+                  <p className="mt-3 text-sm font-semibold text-red-400">
+                    Marca la casilla para continuar con tu pedido.
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:justify-end">
+                <button
+                  onClick={proceedConfirm}
+                  className="w-full sm:w-auto px-8 py-4 rounded-full font-semibold border border-white/5 text-lg transition-all duration-300 bg-black text-pink-400 hover:scale-105 hover:bg-gradient-to-r hover:from-pink-400 hover:via-fuchsia-500 hover:to-purple-500 hover:text-white shadow-[0_20px_80px_rgba(236,72,153,0.18)]"
+                >
+                  Continuar
+                </button>
+                <button onClick={() => setConfirmOpen(false)} className="w-full sm:w-auto px-6 py-3 rounded-full border border-white/10 text-white">Volver</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Footer */}
+      <footer className="py-16 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid gap-12 items-center lg:grid-cols-2">
+            {/* Mapa - Cuadrado */}
+            <div className="flex flex-col items-center">
+              <div className="rounded-[32px] border border-white/10 bg-[#070708]/90 p-4 w-full max-w-[400px]">
+                <div className="relative overflow-hidden rounded-[28px] border border-white/10 w-full aspect-square">
+                  <iframe
+                    title="Mapa Calp"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d19213.240273277546!2d0.04466806222983466!3d38.64117910419861!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x129729a5aaa7d4d7%3A0x437013c92c48e7fa!2sCalpe%2C%20Alicante!5e0!3m2!1ses!2ses!4v1700000000000!5m2!1ses!2ses"
+                    className="w-full h-full"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  ></iframe>
+                  <button
+                    type="button"
+                    onClick={openMap}
+                    className="absolute inset-0 cursor-pointer"
+                    aria-label="Abrir ubicación en la aplicación de mapas"
+                  >
+                    <span className="sr-only">Abrir ubicación en mapas</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Texto - NOS UBICAMOS EN CALP */}
+            <div className="flex flex-col items-start lg:items-center justify-center text-center lg:text-left">
+              <h2 className="text-5xl md:text-6xl font-black leading-tight mb-6">
+                NOS UBICAMOS EN
+                <span className="block text-pink-400">CALPE</span>
+              </h2>
+              
+              <div className="flex items-center gap-6 mb-8 flex-nowrap">
+                <img src="/DOMICILIARIO.png" alt="domiciliario" className="flex-none w-36 h-36 object-contain" />
+                <div className="text-lg md:text-xl text-white/70 leading-relaxed">
+                  EN 20 MINUTOS CONOCERAS EL VERDADERO PLACER
+                </div>
+              </div>
+
+              <div className="w-full max-w-sm text-center lg:text-left">
+                <h3 className="text-3xl font-black uppercase leading-none text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-500 to-purple-500 sm:text-4xl">
+                  METODOS DE PAGO
+                </h3>
+                <div className="mt-3 flex items-end justify-center gap-4 lg:justify-start">
+                  <img
+                    src="/BILLETE.png"
+                    alt="Efectivo"
+                    className="h-12 w-auto object-contain sm:h-14"
+                  />
+                  <img
+                    src="/BIZUM.png"
+                    alt="Bizum"
+                    className="h-14 w-auto object-contain sm:h-16"
+                  />
+                  <img
+                    src="/MASTERCARD-VISA.png"
+                    alt="Tarjeta"
+                    className="h-8 w-auto object-contain sm:h-10"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="contacto" className="relative flex flex-col gap-6 items-center justify-between md:flex-row mt-16 pt-10 scroll-mt-24 before:absolute before:left-1/2 before:top-0 before:h-px before:w-screen before:-translate-x-1/2 before:bg-white/10">
+            <img src="/LOGO%20PUNTO%20G.png" alt="Punto G" className="h-24 w-auto" />
+            <div className="flex flex-wrap gap-3 justify-center items-center">
+              <a
+                href={instagramLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white/75 transition-all duration-300 hover:border-pink-400 hover:text-white"
+              >
+                Instagram
+              </a>
+
+              <a
+                href={footerWhatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white/75 transition-all duration-300 hover:border-pink-400 hover:text-white"
+              >
+                WhatsApp
+              </a>
+
+              <a
+                href={phoneLink}
+                className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white/75 transition-all duration-300 hover:border-pink-400 hover:text-white"
+              >
+                Teléfono
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
+      </div>
+    </div>
+  )
+}
