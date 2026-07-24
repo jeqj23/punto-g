@@ -1,0 +1,15 @@
+{
+  "name": "Punto G",
+  "short_name": "Punto G",
+  "icons": [
+    {
+      "src": "/imagenes/logo-punto-g.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "display": "standalone"
+}
