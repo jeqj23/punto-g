@@ -1,0 +1,6 @@
+# Punto G: permitir rastreo de contenido público y recursos necesarios.
+User-agent: *
+Allow: /
+
+# Añadir aquí reglas específicas solo cuando existan rutas privadas reales.
+Sitemap: https://puntog.com.es/sitemap.xml

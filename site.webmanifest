@@ -1,6 +1,19 @@
 {
-  "name": "Punto G",
+  "id": "/",
+  "name": "Punto G | Granizados y Cócteles Premium en Calpe",
   "short_name": "Punto G",
+  "description": "Granizados y cócteles premium en Calpe, Alicante, Costa Blanca. Personaliza tus toppings y contacta por WhatsApp.",
+  "lang": "es-ES",
+  "dir": "ltr",
+  "orientation": "any",
+  "display": "standalone",
+  "display_override": ["standalone", "browser"],
+  "scope": "/",
+  "start_url": "/",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "categories": ["food", "drink", "lifestyle"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/imagenes/logo-punto-g.png",
@@ -8,8 +21,5 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ],
-  "theme_color": "#000000",
-  "background_color": "#000000",
-  "display": "standalone"
+  ]
 }

@@ -1,0 +1,15 @@
+/* TEAM */
+Sitio: Punto G
+Descripción: Web oficial de una coctelería premium de granizados y cócteles en Calpe.
+Contacto: WhatsApp https://wa.me/573133557894
+Instagram: https://www.instagram.com/puntog_oficiall/?hl=es
+
+/* SITE */
+Web: https://puntog.com.es/
+Dominio: puntog.com.es
+Ubicación: Calpe, Alicante, España
+Framework: React
+Bundler: Vite
+Tecnologías: React, Vite, Tailwind CSS
+Hosting: No documentado en el repositorio.
+Última actualización: 2026-07-29
